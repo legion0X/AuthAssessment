@@ -1,24 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 
 export const withAuth = (WrappedComponent) => {
-  return (props) => {
+  const ComponentWithAuth = (props) => {
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
       const token = localStorage.getItem("token");
       if (!token) {
-        router.replace("/login");
-      } else {
-        setIsAuthenticated(true);
+        router.push("/login");
       }
-    }, []);
-
-    if (!isAuthenticated) {
-      return null;
-    }
+    }, [router]);
 
     return <WrappedComponent {...props} />;
   };
+
+  ComponentWithAuth.displayName = `withAuth(${WrappedComponent.displayName || WrappedComponent.name || "Component"})`;
+
+  return ComponentWithAuth;
 };
